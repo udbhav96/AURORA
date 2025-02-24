@@ -1,8 +1,8 @@
-const fetch = require("node-fetch"); 
+import fetch from "node-fetch";
 
-module.exports = {
+export default {
     name: "!facts",
-    aliases : ["!f"] ,
+    aliases: ["!f"],
     execute(message) {
         fetch("https://dummyjson.com/quotes/random")
             .then(response => response.json())
