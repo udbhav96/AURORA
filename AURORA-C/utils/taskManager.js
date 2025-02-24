@@ -57,4 +57,10 @@ const removeTask = (userId, task = null) => {
 };
 
 // ✅ Export functions (ESM)
-export { addTask, getTasks, removeTask };
+const taskManager = {
+    addTask() { /* code */ },
+    removeTask() { /* code */ },
+    viewTasks() { /* code */ }
+};
+
+export default taskManager;
