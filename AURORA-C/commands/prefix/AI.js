@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-const axios = require('axios');
+import axios from 'axios';
 
 module.exports = {
     name: '!ask',

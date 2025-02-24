@@ -1,5 +1,5 @@
-const fs = require("fs").promises;
-const path = require("path");
+import path from "path";
+import fs from "fs";
 
 const logFilePath = path.join(__dirname, "../../logs.txt");
 
