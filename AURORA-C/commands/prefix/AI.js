@@ -19,11 +19,10 @@ export default {
                 { headers: { Authorization: `Bearer ${process.env.HUGGINGFACE_TOKEN}` } }
             );
 
-            console.log("Full API Response:", response.data); // ✅ Log the full response
 
-            // ✅ Fix: Access generated text properly
-            if (response.data && response.data.generated_text) {
-                message.reply(response.data.generated_text);
+            // ✅ Fix: Correctly access `generated_text`
+            if (Array.isArray(response.data) && response.data.length > 0 && response.data[0].generated_text) {
+                message.reply(response.data[0].generated_text);
             } else {
                 message.reply("⚠️ AI didn't return a valid response. Try again.");
             }
