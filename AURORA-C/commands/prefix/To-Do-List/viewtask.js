@@ -1,7 +1,7 @@
-const { EmbedBuilder } = require("discord.js");
-const taskManager = require("../../../utils/taskManager");
+import { EmbedBuilder } from "discord.js";
+import taskManager from "../../../utils/taskManager.js";
 
-module.exports = {
+export default {
     name: "!viewtasks",
     aliases: ["!vt"],
     execute: (message) => {

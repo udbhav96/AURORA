@@ -1,14 +1,15 @@
-module.exports = {
+export default {
     name: "!echo",
-    aliases :[ "!e"],
+    aliases: ["!e"],
     execute(message, args) {
         if (args.length === 0) {
-            message.channel.send("Please provide a message to echo!");
+            message.channel.send("❌ Please provide a message to echo!");
         } else {
             message.channel.send(args.join(" "));
         }
     }
 };
+
 // ✅ Export an object containing command details
 // - name: The command trigger ("!echo")
 // - execute: The function that runs when the command is used

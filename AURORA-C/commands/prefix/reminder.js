@@ -1,4 +1,4 @@
-module.exports = {
+const reminderCommand = {
     name: "!reminder",
     aliases: ["!r"],
     execute: (message, args) => {
@@ -26,7 +26,8 @@ module.exports = {
     }
 };
 
-function convertTimeToMs(timeStr) {
+// Function to convert time format to milliseconds
+const convertTimeToMs = (timeStr) => {
     const match = timeStr.match(/^(\d+)(s|m|h)$/);
     if (!match) return null;
 
@@ -39,4 +40,7 @@ function convertTimeToMs(timeStr) {
         case "h": return value * 3600000;
         default: return null;
     }
-}
+};
+
+// ✅ Export as ES module
+export default reminderCommand;

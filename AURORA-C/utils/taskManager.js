@@ -1,16 +1,18 @@
-const fs = require("fs");
-const path = require("path");
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
-const filePath = path.join(__dirname, "../data/tasks.json");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const filePath = join(__dirname, "../data/tasks.json");
 
 // ✅ Helper function to load tasks from file
 const loadTasks = () => {
-    if (!fs.existsSync(filePath)) return {};
-    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+    if (!existsSync(filePath)) return {};
+    return JSON.parse(readFileSync(filePath, "utf8"));
 };
 
 // ✅ Helper function to save tasks
-const saveTasks = (tasks) => fs.writeFileSync(filePath, JSON.stringify(tasks, null, 2));
+const saveTasks = (tasks) => writeFileSync(filePath, JSON.stringify(tasks, null, 2));
 
 // ✅ Add a task for a specific user
 const addTask = (userId, task) => {
@@ -54,5 +56,5 @@ const removeTask = (userId, task = null) => {
     return `✅ Task removed!`;
 };
 
-// ✅ Export functions
-module.exports = { addTask, getTasks, removeTask };
+// ✅ Export functions (ESM)
+export { addTask, getTasks, removeTask };

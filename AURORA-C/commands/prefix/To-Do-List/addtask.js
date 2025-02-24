@@ -1,6 +1,6 @@
-const taskManager = require("../../../utils/taskManager");
+import taskManager from "../../../utils/taskManager.js";
 
-module.exports = {
+export default {
     name: "!addtask",
     aliases: ["!at"],
     execute: (message, args) => {

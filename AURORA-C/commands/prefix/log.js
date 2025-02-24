@@ -1,9 +1,14 @@
 import path from "path";
-import fs from "fs";
+import fs from "fs/promises";
+import { fileURLToPath } from "url";
+
+// ✅ Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const logFilePath = path.join(__dirname, "../../logs.txt");
 
-module.exports = {
+export default {
     name: "!log",
     aliases: ["!l"],
     execute: async (message, args) => {

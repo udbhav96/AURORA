@@ -1,10 +1,33 @@
 import dotenv from "dotenv";
-dotenv.config();
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
+import { Client, GatewayIntentBits, Collection } from "discord.js";
 
-const { Client, GatewayIntentBits, Collection } = require("discord.js");
+// ✅ Fix __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// ✅ Load environment variables
+dotenv.config();
+
+// ✅ Define file paths
+const logsPath = path.join(process.cwd(), "logs.txt");
+const tasksPath = path.join(process.cwd(), "tasks.json");
+
+// ✅ Ensure logs.txt exists
+if (!fs.existsSync(logsPath)) {
+    fs.writeFileSync(logsPath, "", "utf8");
+    console.log("📝 Created logs.txt");
+}
+
+// ✅ Ensure tasks.json exists
+if (!fs.existsSync(tasksPath)) {
+    fs.writeFileSync(tasksPath, "{}", "utf8"); // Empty JSON object
+    console.log("📂 Created tasks.json");
+}
+
+// ✅ Create the bot instance with required permissions
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -28,21 +51,22 @@ function loadCommands(commandsPath, commandsCollection, aliasCollection, type) {
             // If it's a folder, load commands inside it
             loadCommands(fullPath, commandsCollection, aliasCollection, type);
         } else if (file.name.endsWith(".js")) {
-            const command = require(fullPath);
-            if (command.name && typeof command.execute === "function") {
-                commandsCollection.set(command.name, command);
-                console.log(`✅ Loaded ${type} command: ${command.name}`);
+            import(fullPath).then((command) => {
+                if (command.default?.name && typeof command.default.execute === "function") {
+                    commandsCollection.set(command.default.name, command.default);
+                    console.log(`✅ Loaded ${type} command: ${command.default.name}`);
 
-                // ✅ Register aliases if available
-                if (Array.isArray(command.aliases)) {
-                    for (const alias of command.aliases) {
-                        aliasCollection.set(alias, command.name);
-                        console.log(`🔹 Registered alias: ${alias} -> ${command.name}`)
+                    // ✅ Register aliases if available
+                    if (Array.isArray(command.default.aliases)) {
+                        for (const alias of command.default.aliases) {
+                            aliasCollection.set(alias, command.default.name);
+                            console.log(`🔹 Registered alias: ${alias} -> ${command.default.name}`);
+                        }
                     }
+                } else {
+                    console.log(`⚠️ Skipping invalid ${type} command file: ${file.name}`);
                 }
-            } else {
-                console.log(`⚠️ Skipping invalid ${type} command file: ${file.name}`);
-            }
+            }).catch((err) => console.error(`❌ Error loading command ${file.name}:`, err));
         }
     }
 }
@@ -62,7 +86,7 @@ client.once("ready", () => {
 client.on("messageCreate", (message) => {
     if (message.author.bot) return; // Ignore bot messages
 
-    const args = message.content.trim().split(/\s+/); 
+    const args = message.content.trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
     // ✅ Check for command or alias
@@ -74,6 +98,7 @@ client.on("messageCreate", (message) => {
 });
 
 client.login(process.env.TOKEN);
+
 
 // ✅ Load environment variables from the .env file (contains the bot token)
 

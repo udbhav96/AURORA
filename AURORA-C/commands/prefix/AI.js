@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
-import axios from 'axios';
+import axios from "axios";
 
-module.exports = {
-    name: '!ask',
-    description: 'Ask the AI a question!',
+export default {
+    name: "!ask",
+    description: "Ask the AI a question!",
     async execute(message, args) {
         if (!args.length) {
             return message.reply("Please provide a question! Example: `!ask How does JavaScript work?`");
@@ -14,16 +14,16 @@ module.exports = {
 
         try {
             const response = await axios.post(
-                'https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill',
+                "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
                 { inputs: userQuestion },
                 { headers: { Authorization: `Bearer ${process.env.HUGGINGFACE_TOKEN}` } }
             );
 
             console.log("Full API Response:", response.data); // ✅ Log the full response
 
-            // ✅ Fix: Access first item in the array
-            if (Array.isArray(response.data) && response.data.length > 0 && response.data[0].generated_text) {
-                message.reply(response.data[0].generated_text);
+            // ✅ Fix: Access generated text properly
+            if (response.data && response.data.generated_text) {
+                message.reply(response.data.generated_text);
             } else {
                 message.reply("⚠️ AI didn't return a valid response. Try again.");
             }

@@ -1,10 +1,10 @@
-const { EmbedBuilder } = require("discord.js");
+import { EmbedBuilder } from "discord.js";
 
-module.exports = {
+export default {
     name: "!poll",
     aliases: ["!p"],
     execute: async (message) => {
-        // Extract all quoted parts using regex
+        // Extract quoted parts using regex
         const optionMatches = message.content.match(/"([^"]+)"/g);
         if (!optionMatches || optionMatches.length < 3) {
             return message.channel.send(
@@ -14,7 +14,6 @@ module.exports = {
 
         // Extract and clean question
         const question = optionMatches.shift().replace(/"/g, "");
-        // Extract and clean options
         const options = optionMatches.map(opt => opt.replace(/"/g, ""));
 
         // Validate number of options (min: 2, max: 9)
@@ -22,10 +21,9 @@ module.exports = {
             return message.channel.send("❌ Please provide between 2 to 9 options.");
         }
 
-        // Emoji reactions for poll
         const emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
-        // Create embed message
+        // Create embed
         const pollEmbed = new EmbedBuilder()
             .setColor("#FFA500")
             .setTitle("📊 Poll Time!")
@@ -33,32 +31,28 @@ module.exports = {
             .setTimestamp()
             .setFooter({ text: `React below to vote! • Created by ${message.author.username}`, iconURL: message.author.displayAvatarURL() });
 
-        // Send the embed message
+        // Send the poll message
         const pollMessage = await message.channel.send({ embeds: [pollEmbed] });
 
-        // React with emojis for voting
+        // React with emoji options
         for (let i = 0; i < options.length; i++) {
             await pollMessage.react(emojis[i]);
         }
 
-        // **🕒 Step 4: Wait for 30 seconds before calculating results**
+        // Wait 30 seconds before showing results
         setTimeout(async () => {
-            // Fetch the updated message to get reaction counts
             const fetchedMessage = await message.channel.messages.fetch(pollMessage.id);
 
-            // Count reactions for each emoji
             const voteCounts = options.map((option, i) => ({
                 option,
-                votes: fetchedMessage.reactions.cache.get(emojis[i])?.count - 1 || 0, // Subtract bot's initial reaction
+                votes: fetchedMessage.reactions.cache.get(emojis[i])?.count - 1 || 0, // Exclude bot's own reaction
             }));
 
-            // Sort options by highest votes
+            // Sort by highest votes
             voteCounts.sort((a, b) => b.votes - a.votes);
 
-            // Format the results
             const results = voteCounts.map(vote => `**${vote.option}**: ${vote.votes} votes`).join("\n");
 
-            // **Edit the poll message to display results**
             const resultEmbed = new EmbedBuilder()
                 .setColor("#00FF00")
                 .setTitle("📊 Poll Results!")

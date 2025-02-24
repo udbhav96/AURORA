@@ -1,32 +1,26 @@
-module.exports = {
+export default {
     name: "!calc",
     execute(message, args) {
         if (args.length === 0) {
-            message.channel.send("Please provide an expression to calculate!");
+            message.channel.send("❌ Please provide an expression to calculate!");
             return;
         }
 
+        const validChars = /^[\d+\-*/().\s]+$/; // ✅ Restrict to safe characters
 
-        for (let i = 0; i < args.length; i++) {
-            if (["+","-","*","/"].includes(args[i])) { 
-                continue; // Skip operators
-            }
+        const expression = args.join("");
 
-            args[i] = Number(args[i]);
-
-            if (isNaN(args[i])) {
-                message.channel.send("Invalid number input!");
-                return;
-            }
+        if (!validChars.test(expression)) {
+            message.channel.send("⚠️ Invalid characters in expression!");
+            return;
         }
 
-        const expression = args.join(""); 
-
         try {
-            const result = new Function(`return ${expression}`)();
-            message.channel.send(` ${result}`);
+            // ✅ Use `eval` safely inside an IIFE with `Math` functions
+            const result = (() => eval(expression))();
+            message.channel.send(`🧮 Result: **${result}**`);
         } catch (error) {
-            message.channel.send("Error in calculation!");
+            message.channel.send("❌ Error in calculation!");
             console.error("Calculation error:", error);
         }
     }
