@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { Client, GatewayIntentBits, Collection } from "discord.js";
+import express from "express"; // ✅ Added Express to keep Render happy
 
 // ✅ Fix __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -79,10 +80,12 @@ if (fs.existsSync(prefixCommandsPath)) {
     console.log(`[WARNING] The directory ${prefixCommandsPath} does not exist.`);
 }
 
+// ✅ Bot Ready Event
 client.once("ready", () => {
     console.log(`✅ Logged in as ${client.user.tag}!`);
 });
 
+// ✅ Handle Messages
 client.on("messageCreate", (message) => {
     if (message.author.bot) return; // Ignore bot messages
 
@@ -97,7 +100,18 @@ client.on("messageCreate", (message) => {
     }
 });
 
+// ✅ Login the bot
 client.login(process.env.TOKEN);
+
+// ✅ Keep Render alive with Express (Prevents timeout issues)
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+    res.send("Bot is running!");
+});
+
+app.listen(PORT, () => console.log(`🌐 Web server running on port ${PORT}`));
 
 
 // ✅ Load environment variables from the .env file (contains the bot token)
