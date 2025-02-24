@@ -56,5 +56,10 @@ const removeTask = (userId, task = null) => {
     return `✅ Task removed!`;
 };
 
-// ✅ Export functions (ESM)
-export default taskManager;
+const taskManager = {
+    addTask,
+    getTasks,
+    removeTask
+};
+
+export default taskManager;  // ✅ Now it's correctly exported
